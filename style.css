@@ -266,6 +266,41 @@ kbd {
 .icon-btn:hover { transform: scale(1.08); background: rgba(255, 255, 255, 0.9); }
 .icon-btn.off { opacity: 0.55; }
 
+/* ---------- Swipe tutorial hints (touch only) ---------- */
+.swipe-hint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 46px;
+  pointer-events: none;
+  z-index: 6;
+  transition: opacity 0.5s ease;
+}
+.swipe-hint.hidden { opacity: 0; }
+.swipe-hint .hint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #fff;
+  font-weight: 600;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+}
+.swipe-hint .arrow { font-size: 46px; line-height: 1; }
+.swipe-hint .lbl { font-size: 14px; margin-top: 4px; opacity: 0.95; letter-spacing: 0.3px; }
+.swipe-hint .up .arrow { animation: hintUp 1.2s ease-in-out infinite; }
+.swipe-hint .down .arrow { animation: hintDown 1.2s ease-in-out infinite; }
+@keyframes hintUp {
+  0%, 100% { transform: translateY(12px); opacity: 0.35; }
+  50% { transform: translateY(-12px); opacity: 1; }
+}
+@keyframes hintDown {
+  0%, 100% { transform: translateY(-12px); opacity: 0.35; }
+  50% { transform: translateY(12px); opacity: 1; }
+}
+
 /* ---------- Mobile tuning ---------- */
 @media (max-width: 480px) {
   .panel { padding: 24px 22px; border-radius: 20px; }

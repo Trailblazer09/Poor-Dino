@@ -39,7 +39,7 @@ mocks him the whole way.
 
 | Action | Keys | Touch |
 | ------ | ---- | ----- |
-| Jump   | `Space` / `↑` / `W` | Tap anywhere |
+| Jump   | `Space` / `↑` / `W` | Swipe up |
 | Duck   | `↓` / `S` | Swipe down |
 | Start / Restart | `Space` | Tap |
 | Mute   | 🔊 button (top-left) | Tap button |

@@ -390,23 +390,26 @@
     if (e.code === "ArrowDown" || e.code === "KeyS") setDuck(false);
   });
 
-  // Touch / mouse: a tap ANYWHERE jumps; dragging downward (swipe) ducks.
-  let touchActive = false, touchStartY = 0, touchDucking = false;
+  // Touch: swipe UP to jump, swipe DOWN to duck — both fire mid-swipe (no delay).
+  // Mouse (desktop): a click jumps instantly.
+  let touchActive = false, touchStartY = 0, touchJumped = false, touchDucking = false;
   canvas.addEventListener("pointerdown", (e) => {
     e.preventDefault();
     sound.ensure();
     if (state !== STATE.RUNNING) { primaryAction(); return; }   // start / restart
-    touchActive = true; touchDucking = false; touchStartY = e.clientY;
+    if (e.pointerType === "mouse") { jump(); return; }          // desktop click = instant jump
+    touchActive = true; touchStartY = e.clientY; touchJumped = false; touchDucking = false;
   });
   window.addEventListener("pointermove", (e) => {
     if (!touchActive) return;
-    if (e.clientY - touchStartY > 26 && !touchDucking) { setDuck(true); touchDucking = true; }
+    const dy = e.clientY - touchStartY;
+    if (dy < -22 && !touchJumped) { jump(); touchJumped = true; hideSwipeHint(); }
+    else if (dy > 26 && !touchDucking) { setDuck(true); touchDucking = true; hideSwipeHint(); }
   });
   function endTouch() {
     if (!touchActive) return;
     touchActive = false;
     if (touchDucking) { setDuck(false); touchDucking = false; }
-    else jump();                              // released without swiping down → jump
   }
   window.addEventListener("pointerup", endTouch);
   window.addEventListener("pointercancel", endTouch);
@@ -525,6 +528,22 @@
     if (powerLabelEl) powerLabelEl.textContent = ready ? "READY!" : "2x\nJUMP";
   }
 
+  // Swipe tutorial hints (touch devices only), shown for the first few seconds.
+  const swipeHint = document.getElementById("swipe-hint");
+  const isTouch = (typeof matchMedia !== "undefined" && matchMedia("(pointer: coarse)").matches)
+    || (typeof window !== "undefined" && "ontouchstart" in window);
+  let hintTimer = null;
+  function showSwipeHint() {
+    if (!swipeHint || !isTouch) return;
+    swipeHint.classList.remove("hidden");
+    if (hintTimer) clearTimeout(hintTimer);
+    hintTimer = setTimeout(hideSwipeHint, 8000);   // within the "5–10s" window
+  }
+  function hideSwipeHint() {
+    if (swipeHint) swipeHint.classList.add("hidden");
+    if (hintTimer) { clearTimeout(hintTimer); hintTimer = null; }
+  }
+
   function spawnQuip() {
     const text = QUIP_LINES[Math.floor(Math.random() * QUIP_LINES.length)];
     quips.push({ text, x: view.w + 30, yo: rand(16, 38), vx: 2.3, life: 0, w: 0 });
@@ -595,6 +614,7 @@
     overlay.classList.add("hidden");
     gameover.classList.add("hidden");
     sound.startRain();
+    showSwipeHint();
   }
 
   function loseLife(o) {
@@ -612,6 +632,7 @@
     state = STATE.OVER;
     shake = 16;
     sound.stopRain();
+    hideSwipeHint();
     const s = Math.floor(score);
     if (s > hi) { hi = s; localStorage.setItem("bd_hi", String(hi)); }
     const rank = rankFor(s);
