@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#8fd3f0" />
+  <title>Poor Dino — Cope &amp; Run</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦕</text></svg>" />
+</head>
+<body>
+  <div id="game-wrap">
+    <canvas id="game"></canvas>
+
+    <div id="hud">
+      <div class="score-box">
+        <span class="hud-label">HI</span>
+        <span id="hi-score">00000</span>
+      </div>
+      <div class="score-box">
+        <span id="score">00000</span>
+      </div>
+    </div>
+
+    <div id="lives" aria-label="Lives">❤️❤️❤️</div>
+
+    <div id="power" class="power">
+      <div class="power-cap">⚡</div>
+      <div class="power-track"><div class="power-fill" id="power-fill"></div></div>
+      <div class="power-label" id="power-label">2x&#10;JUMP</div>
+    </div>
+
+    <div id="overlay" class="overlay">
+      <div class="panel">
+        <h1>🦕 Poor&nbsp;Dino</h1>
+        <p class="subtitle">Cope &amp; Run</p>
+        <p class="tag">Run, jump, and refuse to stay extinct.</p>
+        <button id="start-btn" class="btn">Play</button>
+        <div class="controls">
+          <span><kbd>Space</kbd> / <kbd>↑</kbd> Jump</span>
+          <span><kbd>↓</kbd> Duck</span>
+          <span><kbd>Tap</kbd> on mobile</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="gameover" class="overlay hidden">
+      <div class="panel">
+        <h1>Game Over</h1>
+        <p class="tag" id="final-score">Score: 0</p>
+        <p class="rank-line" id="rank-line">Certified Fossil</p>
+        <p class="epitaph" id="epitaph-line">Gone, but still technically extinct.</p>
+        <img id="share-card" class="share-card" alt="Your Poor Dino run" />
+        <p class="tag small" id="best-line">Best: 0</p>
+        <div class="share-row">
+          <button id="copy-btn" class="btn small-btn">📋 Copy my cope</button>
+          <button id="share-btn" class="btn small-btn">📤 Share</button>
+          <a id="save-card" class="btn small-btn" download="poor-dino.png">⬇ Card</a>
+        </div>
+        <button id="restart-btn" class="btn">Play Again</button>
+        <div class="controls"><span>Press <kbd>Space</kbd> to restart</span></div>
+      </div>
+    </div>
+
+    <button id="mute-btn" class="icon-btn" title="Toggle sound" aria-label="Toggle sound">🔊</button>
+  </div>
+
+  <script src="game.js?v=2"></script>
+</body>
+</html>
