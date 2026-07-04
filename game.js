@@ -150,6 +150,59 @@
   });
   refreshMute();
 
+  // ----- Face mode (reversible feature) --------------------------------------
+  // The player's photo replaces the dino's face. Fully client-side: the image
+  // is cropped/downscaled in the browser and kept in localStorage only.
+  const faceInput = document.getElementById("face-input");
+  const faceBtn = document.getElementById("face-btn");
+  const face = { img: null };
+
+  function refreshFaceBtn() {
+    if (faceBtn) faceBtn.textContent = face.img ? "🗑 Remove my face" : "🤳 Play as yourself";
+  }
+  function setFace(dataURL) {
+    if (!dataURL) {
+      face.img = null;
+      localStorage.removeItem("bd_face");
+      refreshFaceBtn();
+      return;
+    }
+    const im = new Image();
+    im.onload = () => { face.img = im; refreshFaceBtn(); };
+    im.src = dataURL;
+  }
+  if (faceBtn) faceBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (face.img) setFace(null);
+    else if (faceInput) faceInput.click();
+    faceBtn.blur();   // so Space still jumps, not re-toggles the face
+  });
+  if (faceInput) faceInput.addEventListener("change", () => {
+    const f = faceInput.files && faceInput.files[0];
+    faceInput.value = "";
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const im = new Image();
+      im.onload = () => {
+        // Center-crop to a square and downscale so it fits in localStorage.
+        const S = 128;
+        const c = document.createElement("canvas");
+        c.width = S; c.height = S;
+        const g = c.getContext("2d");
+        const side = Math.min(im.width, im.height);
+        g.drawImage(im, (im.width - side) / 2, (im.height - side) / 2, side, side, 0, 0, S, S);
+        const data = c.toDataURL("image/jpeg", 0.85);
+        try { localStorage.setItem("bd_face", data); } catch (e) { /* storage full — still use it this session */ }
+        setFace(data);
+      };
+      im.src = reader.result;
+    };
+    reader.readAsDataURL(f);
+  });
+  setFace(localStorage.getItem("bd_face"));
+  refreshFaceBtn();
+
   // ----- Game state ---------------------------------------------------------
   const STATE = { READY: 0, RUNNING: 1, OVER: 2 };
   let state = STATE.READY;
@@ -492,8 +545,17 @@
       g.fillText("🦕 Poor Dino", 30, 54);
       g.fillStyle = "#ffd166"; g.font = "600 19px Fredoka, system-ui, sans-serif";
       g.fillText("Cope & Run", 34, 80);
-      // big dino
-      g.font = "92px system-ui, sans-serif"; g.fillText("🦖", 40, 220);
+      // big dino — or the player's own face when face mode is on
+      if (face.img) {
+        g.save();
+        g.beginPath(); g.arc(86, 175, 46, 0, Math.PI * 2); g.clip();
+        g.drawImage(face.img, 40, 129, 92, 92);
+        g.restore();
+        g.strokeStyle = "#fff"; g.lineWidth = 3;
+        g.beginPath(); g.arc(86, 175, 46, 0, Math.PI * 2); g.stroke();
+      } else {
+        g.font = "92px system-ui, sans-serif"; g.fillText("🦖", 40, 220);
+      }
       // score + rank
       g.textAlign = "right"; g.fillStyle = "#ffffff";
       g.font = "700 74px Fredoka, system-ui, sans-serif"; g.fillText(s + " m", W - 30, 150);
@@ -1451,6 +1513,21 @@
     // nostril
     ctx.fillStyle = rgb(cDark);
     ctx.beginPath(); ctx.arc(52, -47, 1.3, 0, Math.PI * 2); ctx.fill();
+
+    // Face mode (reversible feature): the player's photo covers the dino's face.
+    // Tilted to match the head's pose — works best with a right-facing profile photo.
+    if (face.img) {
+      const fx = 38, fy = -51, fr = 16;
+      const tilt = 0.18;                 // ~10° clockwise, follows the snout line
+      ctx.save();
+      ctx.translate(fx, fy); ctx.rotate(tilt);
+      ctx.beginPath(); ctx.arc(0, 0, fr, 0, Math.PI * 2); ctx.clip();
+      ctx.drawImage(face.img, -fr, -fr, fr * 2, fr * 2);
+      ctx.restore();
+      ctx.strokeStyle = "rgba(255,255,255,0.85)";
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(fx, fy, fr, 0, Math.PI * 2); ctx.stroke();
+    }
 
     ctx.restore();  // body group
     ctx.restore();  // dino transform

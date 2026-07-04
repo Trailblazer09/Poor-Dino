@@ -248,6 +248,16 @@ kbd {
   color: var(--ink);
 }
 
+/* ---------- Face mode ---------- */
+.face-row {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.face-note { font-size: 11px; color: #8a99a8; }
+
 /* ---------- Mute ---------- */
 .icon-btn {
   position: absolute;

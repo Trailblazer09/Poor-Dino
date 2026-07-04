@@ -39,6 +39,12 @@
         <p class="subtitle">Cope &amp; Run</p>
         <p class="tag">Run, jump, and refuse to stay extinct.</p>
         <button id="start-btn" class="btn">Play</button>
+        <!-- Face mode (reversible feature): remove this block to disable -->
+        <div class="face-row">
+          <button id="face-btn" class="btn small-btn">🤳 Play as yourself</button>
+          <span class="face-note">Use a side profile facing right → · photo never leaves this device</span>
+        </div>
+        <input type="file" id="face-input" accept="image/*" hidden />
         <div class="controls">
           <span><kbd>Space</kbd> / <kbd>↑</kbd> Jump</span>
           <span><kbd>↓</kbd> Duck</span>
@@ -73,6 +79,6 @@
     </div>
   </div>
 
-  <script src="game.js?v=4"></script>
+  <script src="game.js?v=5"></script>
 </body>
 </html>
